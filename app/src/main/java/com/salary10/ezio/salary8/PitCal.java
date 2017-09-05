@@ -25,30 +25,23 @@ public class PitCal {
             taxbase = taxbase*3/100;
         }
         else if (taxbase <=4500){
-            taxbase -= 1500;
-            taxbase = 105 + taxbase*10/100;
+            taxbase = taxbase*10/100 - 105;
 
         }
         else if (taxbase <= 9000){
-            taxbase -= 4500;
-            taxbase = 555+taxbase*20/100;
+            taxbase = taxbase*20/100 - 555;
         }
         else if (taxbase <= 35000){
-            taxbase -= 9000;
-            taxbase = 1005 + taxbase*25/100;
-            System.out.println("picA:"+taxbase);
+            taxbase = taxbase*25/100 - 1005;
         }
         else if (taxbase <= 55000){
-            taxbase -= 35000;
-            taxbase = 2755 + taxbase*30/100;
+            taxbase = taxbase*30/100 - 2755;
         }
         else if (taxbase <= 80000){
-            taxbase -= 55000;
-            taxbase = 5505 + taxbase*35/100;
+            taxbase = taxbase*35/100 - 5505;
         }
         else if (taxbase >80000){
-            taxbase -= 80000;
-            taxbase = 13505+taxbase*45/100;
+            taxbase = taxbase*45/100 - 13505;
         }
         return taxbase;
     }

@@ -45,8 +45,10 @@ public class MainActivity extends AppCompatActivity {
 
     private Integer dataok = 1;
     private float salary;
+    private float atsSalary;
     private float[] ratios=new float[6];//oldR,workinjurR,healthR,birthR,houseR,unempR;
     private float socialBase,houseBase,socialUp,houseUp;
+    private float socialRatio = 0;
 
     private void locateWidget(){
         calBtn = (Button)findViewById(R.id.calRun);
@@ -69,6 +71,10 @@ public class MainActivity extends AppCompatActivity {
         salaryEt = (EditText)findViewById(R.id.mysalaryVal);
         payBase[SOCIALBASETT] = (EditText)findViewById(R.id.socicalBaseVal);
         payBase[HOUSEBASETT] = (EditText)findViewById(R.id.providBaseVal);
+
+        for(int i=0;i<6;i++){
+            ck6CK[i].setChecked(true);
+        }
     }
 
     private int getRatio(int city){
@@ -78,8 +84,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void writeRatio (){
 
-        payBase[SOCIALBASETT].setText("3000");
-        payBase[HOUSEBASETT].setText("4000");
+        payBase[SOCIALBASETT].setText("17379");
+        payBase[HOUSEBASETT].setText("17379");
 
         ed6Ed[OLDTT].setText("0.08");
         ed6Ed[HEALTHTT].setText("0.02");
@@ -106,7 +112,6 @@ public class MainActivity extends AppCompatActivity {
     private int getData(){
         String temp;
         dataok = 1;
-        System.out.println("00000");
         //get salary
         temp = salaryEt.getText().toString();
         if (temp.isEmpty() != true) {
@@ -116,13 +121,13 @@ public class MainActivity extends AppCompatActivity {
             dataok = 0;
         }
 
-        System.out.println("01");
+        socialRatio=0;
         //get ratio from editbox
         for(int i=0;i<6;i++){
-            System.out.println("AA "+i);
             if(ck6CK[i].isChecked() == true){
 
                 temp = ed6Ed[i].getText().toString();
+                System.out.println(temp);
                 if (temp.isEmpty() != true)
                     ratios[i] = Float.valueOf(temp);
                 else
@@ -131,9 +136,11 @@ public class MainActivity extends AppCompatActivity {
             else{
                 ratios[i]=0;
             }
+            socialRatio+=ratios[i];
         }
+        socialRatio -= ratios[HOUSETT];
+        System.out.println("SR:"+socialRatio);
 
-        System.out.println("02");
         if (dataok == 0){
             AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
 
@@ -158,22 +165,33 @@ public class MainActivity extends AppCompatActivity {
         temp = payBase[SOCIALBASETT].getText().toString();
         if (temp.isEmpty() != true) {
             socialBase = Float.valueOf(temp);
+            if (socialBase > salary)
+                socialBase =salary;
         }
 
         temp = payBase[HOUSEBASETT].getText().toString();
         if (temp.isEmpty() != true) {
             houseBase = Float.valueOf(temp);
+            if (houseBase > salary)
+                houseBase = salary;
         }
 
-        System.out.println("2222");
+        atsSalary = (socialBase*socialRatio + houseBase*ratios[HOUSETT]);
+
+        System.out.println("ats:"+atsSalary);
+
+        atsSalary = salary - atsSalary;
+        System.out.println("ats:"+atsSalary);
         return 0;
     }
 
     private int updateResult(){
-        System.out.println("11111");
         PitCal pcs = new PitCal();
-        ;
-        atsTv.setText(String.valueOf(getAts() - pcs.calcPit(getAts())));
+        float temp = atsSalary - pcs.calcPit(atsSalary);
+        atsTv.setText(String.valueOf(temp));
+
+        System.out.println("cald:"+temp+"pic:"+pcs.calcPit(atsSalary));
+
         ((LinearLayout)findViewById(R.id.resLo)).setVisibility(View.VISIBLE);
 
         return 0;

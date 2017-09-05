@@ -17,30 +17,38 @@ package com.salary10.ezio.salary8;
 public class PitCal {
     public float calcPit(float salary){
         float taxbase = salary - 3500;
-        if (salary <= 0){
+        if (taxbase <= 0){
             return 0;
         }
 
         if (taxbase <=1500){
-
+            taxbase = taxbase*3/100;
         }
         else if (taxbase <=4500){
+            taxbase -= 1500;
+            taxbase = 105 + taxbase*10/100;
 
         }
         else if (taxbase <= 9000){
-
+            taxbase -= 4500;
+            taxbase = 555+taxbase*20/100;
         }
         else if (taxbase <= 35000){
-
+            taxbase -= 9000;
+            taxbase = 1005 + taxbase*25/100;
+            System.out.println("picA:"+taxbase);
         }
         else if (taxbase <= 55000){
-
+            taxbase -= 35000;
+            taxbase = 2755 + taxbase*30/100;
         }
         else if (taxbase <= 80000){
-
+            taxbase -= 55000;
+            taxbase = 5505 + taxbase*35/100;
         }
-        else if (taxbase >800000){
-
+        else if (taxbase >80000){
+            taxbase -= 80000;
+            taxbase = 13505+taxbase*45/100;
         }
         return taxbase;
     }

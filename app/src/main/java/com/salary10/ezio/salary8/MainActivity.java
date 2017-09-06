@@ -22,6 +22,8 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import org.w3c.dom.Text;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -51,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout leftDly;
     private ListView leftDlt;
     private String[] leftPt;
+    private TextView citynameTv;
 
 
     private Integer dataok = 1;
@@ -67,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
         calBtn = (Button)findViewById(R.id.calRun);
         atsTv = (TextView)findViewById(R.id.caledsalaryVal);
         taxedTv = (TextView)findViewById(R.id.taxedsalaryVal);
+        citynameTv =(TextView)findViewById(R.id.cityName);
 
         ck6CK[OLDTT] = (CheckBox)findViewById(R.id.oldOn);
         ck6CK[HEALTHTT] = (CheckBox)findViewById(R.id.healthOn);
@@ -255,7 +259,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void selectItem(int position) {
-
+        leftDlt.setItemChecked(position,true);
+        citynameTv.setText(leftPt[position]);
+        leftDly.closeDrawer(leftDlt);
     }
 
     @Override

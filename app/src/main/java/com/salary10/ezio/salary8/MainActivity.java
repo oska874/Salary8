@@ -1,6 +1,7 @@
 package com.salary10.ezio.salary8;
 
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -41,22 +42,31 @@ public class MainActivity extends AppCompatActivity {
 
     private Button calBtn;
     private TextView atsTv;
+    private TextView taxedTv;
     private CheckBox[] ck6CK = new CheckBox[6];
     private EditText[] ed6Ed = new EditText[6];
+    private EditText[] edcom6Ed = new EditText[6];
     private EditText salaryEt;
     private EditText[] payBase = new EditText[2];
+    private DrawerLayout leftDly;
+    private ListView leftDlt;
+    private String[] leftPt;
 
 
     private Integer dataok = 1;
     private float salary;
     private float atsSalary;
+    private float comCost;
     private float[] ratios=new float[6];//oldR,workinjurR,healthR,birthR,houseR,unempR;
+    private float[] ratiosCom=new float[6];
     private float socialBase,houseBase,socialUp,houseUp;
     private float socialRatio = 0;
+    private float socialcomRatio = 0;
 
     private void locateWidget(){
         calBtn = (Button)findViewById(R.id.calRun);
         atsTv = (TextView)findViewById(R.id.caledsalaryVal);
+        taxedTv = (TextView)findViewById(R.id.taxedsalaryVal);
 
         ck6CK[OLDTT] = (CheckBox)findViewById(R.id.oldOn);
         ck6CK[HEALTHTT] = (CheckBox)findViewById(R.id.healthOn);
@@ -72,6 +82,13 @@ public class MainActivity extends AppCompatActivity {
         ed6Ed[BIRTHTT] = (EditText)findViewById(R.id.birthRatio);
         ed6Ed[HOUSETT] = (EditText)findViewById(R.id.houseRatio);
 
+        edcom6Ed[OLDTT] = (EditText)findViewById(R.id.oldComRatio);
+        edcom6Ed[HEALTHTT] = (EditText)findViewById(R.id.healthComRatio);
+        edcom6Ed[UNEMPTT] = (EditText)findViewById(R.id.unempComRatio);
+        edcom6Ed[WORKINJTT] = (EditText)findViewById(R.id.workinjurComRatio);
+        edcom6Ed[BIRTHTT] = (EditText)findViewById(R.id.birthComRatio);
+        edcom6Ed[HOUSETT] = (EditText)findViewById(R.id.houseComRatio);
+
         salaryEt = (EditText)findViewById(R.id.mysalaryVal);
         payBase[SOCIALBASETT] = (EditText)findViewById(R.id.socicalBaseVal);
         payBase[HOUSEBASETT] = (EditText)findViewById(R.id.providBaseVal);
@@ -79,6 +96,11 @@ public class MainActivity extends AppCompatActivity {
         for(int i=0;i<6;i++){
             ck6CK[i].setChecked(true);
         }
+
+        leftDly = (DrawerLayout)findViewById(R.id.left_drawer);
+        leftDlt = (ListView)findViewById(R.id.left_list);
+        leftPt = getResources().getStringArray(R.array.city_array);
+
     }
 
     private int getRatio(int city){
@@ -87,6 +109,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void writeRatio (){
+
+        getRatio(0);
 
         payBase[SOCIALBASETT].setText("17379");
         payBase[HOUSEBASETT].setText("17379");
@@ -98,8 +122,14 @@ public class MainActivity extends AppCompatActivity {
         ed6Ed[BIRTHTT].setText("0");
         ed6Ed[HOUSETT].setText("0.12");
 
-    }
+        edcom6Ed[OLDTT].setText("0.20");
+        edcom6Ed[HEALTHTT].setText("0.10");
+        edcom6Ed[UNEMPTT].setText("0.01");
+        edcom6Ed[WORKINJTT].setText("0.003");
+        edcom6Ed[BIRTHTT].setText("0.008");
+        edcom6Ed[HOUSETT].setText("0.12");
 
+    }
     private float getAts(){
         float temp=0;
         for(int i=0;i<6;i++){
@@ -126,24 +156,36 @@ public class MainActivity extends AppCompatActivity {
         }
 
         socialRatio=0;
+        socialcomRatio=0;
         //get ratio from editbox
         for(int i=0;i<6;i++){
             if(ck6CK[i].isChecked() == true){
 
                 temp = ed6Ed[i].getText().toString();
-                System.out.println(temp);
-                if (temp.isEmpty() != true)
+
+                if (temp.isEmpty() != true) {
                     ratios[i] = Float.valueOf(temp);
+                }
+
+                temp = edcom6Ed[i].getText().toString();
+
+                if (temp.isEmpty() != true) {
+                    ratiosCom[i] = Float.valueOf(temp);
+                }
+
                 else
                     dataok = 0;
             }
             else{
                 ratios[i]=0;
+                ratiosCom[i]=0;
             }
-            socialRatio+=ratios[i];
+
+            socialRatio += ratios[i];
+            socialcomRatio += ratiosCom[i];
         }
         socialRatio -= ratios[HOUSETT];
-        System.out.println("SR:"+socialRatio);
+        socialcomRatio -= ratiosCom[HOUSETT];
 
         if (dataok == 0){
             AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
@@ -180,27 +222,41 @@ public class MainActivity extends AppCompatActivity {
                 houseBase = salary;
         }
 
-        atsSalary = (socialBase*socialRatio + houseBase*ratios[HOUSETT]);
+        atsSalary = socialBase*socialRatio + houseBase*ratios[HOUSETT];
+        comCost = socialBase*socialcomRatio + houseBase*ratiosCom[HOUSETT];
 
-        System.out.println("ats:"+atsSalary);
-
+        comCost += salary;
         atsSalary = salary - atsSalary;
-        System.out.println("ats:"+atsSalary);
+
         return 0;
     }
 
     private int updateResult(){
         PitCal pcs = new PitCal();
+
         float temp = atsSalary - pcs.calcPit(atsSalary);
+
         atsTv.setText(String.valueOf(temp));
 
-        System.out.println("cald:"+temp+"pic:"+pcs.calcPit(atsSalary));
+        taxedTv.setText((String.valueOf(comCost)));
+
+        System.out.println("cald:"+temp+"pic:"+pcs.calcPit(atsSalary)+comCost);
 
         ((LinearLayout)findViewById(R.id.resLo)).setVisibility(View.VISIBLE);
 
         return 0;
     }
 
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            selectItem(position);
+        }
+    }
+
+    private void selectItem(int position) {
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -220,7 +276,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //calcuate value
-
         locateWidget();
         getRatio(0);
         writeRatio();
@@ -233,6 +288,10 @@ public class MainActivity extends AppCompatActivity {
                 updateResult();
             }
         });
+
+        leftDlt.setAdapter(new ArrayAdapter<String>(this,
+                R.layout.fg_content,leftPt));
+        leftDlt.setOnItemClickListener(new DrawerItemClickListener());
     }
 
     @Override

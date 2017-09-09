@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="gdSin" >
+
+    <item name="oldR">0.08</item>
+    <item name="healthR">0.02</item>
+    <item name="unempR">0.002</item>
+    <item name="birthR">0</item>
+    <item name="workinjR">0</item>
+    <item name="houseR">0.10</item>
+
+    <item name="oldRC">0.14</item>
+    <item name="healthRC">0.08</item>
+    <item name="unempRC">0.0064</item>
+    <item name="birthRC">0.008</item>
+    <item name="workinjRC">0.004</item>
+    <item name="houseRC">0.10</item>
+
+        <item name="socBaseUp">12303</item>
+        <item name="houseBaseUp">26565</item>
+        <item name="socBaseDown">2461</item>
+        <item name="houseBaseDown">1550</item>
+
+    </string-array>
+
+</resources>

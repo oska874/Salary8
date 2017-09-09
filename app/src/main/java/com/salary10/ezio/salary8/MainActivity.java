@@ -3,6 +3,7 @@ package com.salary10.ezio.salary8;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
@@ -28,19 +29,32 @@ import org.w3c.dom.Text;
 public class MainActivity extends AppCompatActivity {
 
 
-    final int OLDTT = 0;
-    final int HEALTHTT = 1;
-    final int UNEMPTT = 2;
-    final int WORKINJTT = 3;
-    final int BIRTHTT = 4;
-    final int HOUSETT = 5;
-    final int SOCIALBASETT = 0;
-    final int HOUSEBASETT = 1;
+    public static final int OLDTT = 0;
+    public static final int HEALTHTT = 1;
+    public static final int UNEMPTT = 2;
+    public static final int WORKINJTT = 3;
+    public static final int BIRTHTT = 4;
+    public static final int HOUSETT = 5;
+    public static final int RATIOSNUM=6;
+
+    public static final int SOCIALBASETT = 0;
+    public static final int HOUSEBASETT = 1;
+    public static final int SOCIALBASEDOWNTT = 2;
+    public static final int HOUSEBASEDOWNTT = 3;
+
+    public static final int BEIJING=0;
+    public static final int SHANGHAI=1;
+    public static final int GUANGDONG=2;
+    public static final int SHENZEHN=3;
+    public static final int SHANNXI=4;
+    public static final int TIANJIN=5;
+
 
     // Used to load the 'native-lib' library on application startup.
     static {
         System.loadLibrary("native-lib");
     }
+
 
     private Button calBtn;
     private TextView atsTv;
@@ -62,10 +76,11 @@ public class MainActivity extends AppCompatActivity {
     private float comCost;
     private float[] ratios=new float[6];//oldR,workinjurR,healthR,birthR,houseR,unempR;
     private float[] ratiosCom=new float[6];
-    private float socialBase,houseBase,socialUp,houseUp;
+    private float socialBase,houseBase,socialDown,houseDown;
     private float socialRatio = 0;
     private float socialcomRatio = 0;
 
+    //找出要用的控件變量
     private void locateWidget(){
         calBtn = (Button)findViewById(R.id.calRun);
         atsTv = (TextView)findViewById(R.id.caledsalaryVal);
@@ -112,28 +127,62 @@ public class MainActivity extends AppCompatActivity {
         return 0;
     }
 
-    private void writeRatio (){
+    //更新不同地方五險一金比例
+    private void writeRatio (int site){
 
         getRatio(0);
 
-        payBase[SOCIALBASETT].setText("17379");
-        payBase[HOUSEBASETT].setText("17379");
+        Resources res =getResources();
+        String[] ratios=new String[RATIOSNUM*2+4];
+        switch (site){
+            case BEIJING:
+                ratios = res.getStringArray(R.array.bjSin);
+                break;
+            case SHANGHAI:
+                ratios = res.getStringArray(R.array.shSin);
+                break;
+            case SHANNXI:
+                ratios = res.getStringArray(R.array.snxSin);
+                break;
+            case GUANGDONG:
+                ratios = res.getStringArray(R.array.gdSin);
+                break;
+            case SHENZEHN:
+                ratios = res.getStringArray(R.array.szSin);
+                break;
+            case TIANJIN:
+                ratios = res.getStringArray(R.array.tjSin);
+                break;
+            default:
+                System.out.println("error positon");
+                break;
+        }
 
-        ed6Ed[OLDTT].setText("0.08");
-        ed6Ed[HEALTHTT].setText("0.02");
-        ed6Ed[UNEMPTT].setText("0.002");
-        ed6Ed[WORKINJTT].setText("0");
-        ed6Ed[BIRTHTT].setText("0");
-        ed6Ed[HOUSETT].setText("0.12");
 
-        edcom6Ed[OLDTT].setText("0.20");
-        edcom6Ed[HEALTHTT].setText("0.10");
-        edcom6Ed[UNEMPTT].setText("0.01");
-        edcom6Ed[WORKINJTT].setText("0.003");
-        edcom6Ed[BIRTHTT].setText("0.008");
-        edcom6Ed[HOUSETT].setText("0.12");
+        ed6Ed[OLDTT].setText(ratios[OLDTT]);
+        ed6Ed[HEALTHTT].setText(ratios[HEALTHTT]);
+        ed6Ed[UNEMPTT].setText(ratios[UNEMPTT]);
+        ed6Ed[WORKINJTT].setText(ratios[WORKINJTT]);
+        ed6Ed[BIRTHTT].setText(ratios[BIRTHTT]);
+        ed6Ed[HOUSETT].setText(ratios[HOUSETT]);
+
+        edcom6Ed[OLDTT].setText(ratios[OLDTT+RATIOSNUM]);
+        edcom6Ed[HEALTHTT].setText(ratios[HEALTHTT+RATIOSNUM]);
+        edcom6Ed[UNEMPTT].setText(ratios[UNEMPTT+RATIOSNUM]);
+        edcom6Ed[WORKINJTT].setText(ratios[WORKINJTT+RATIOSNUM]);
+        edcom6Ed[BIRTHTT].setText(ratios[BIRTHTT+RATIOSNUM]);
+        edcom6Ed[HOUSETT].setText(ratios[HOUSETT+RATIOSNUM]);
+
+        payBase[SOCIALBASETT].setText(ratios[RATIOSNUM+RATIOSNUM+SOCIALBASETT]);
+        payBase[HOUSEBASETT].setText(ratios[RATIOSNUM+RATIOSNUM+HOUSEBASETT]);
+
+        socialDown=Float.valueOf(ratios[RATIOSNUM+RATIOSNUM+SOCIALBASEDOWNTT]);
+        houseDown=Float.valueOf(ratios[RATIOSNUM+RATIOSNUM+HOUSEBASEDOWNTT]);
 
     }
+
+    /*
+    //計算要上稅的工資
     private float getAts(){
         float temp=0;
         for(int i=0;i<6;i++){
@@ -146,9 +195,12 @@ public class MainActivity extends AppCompatActivity {
 
         return temp;
     }
+    */
 
+    //從空間讀取五險一金比例，并計算出單位成本和上稅工資金額
     private int getData(){
         String temp;
+        float temp2,temp3;
         dataok = 1;
         //get salary
         temp = salaryEt.getText().toString();
@@ -215,19 +267,38 @@ public class MainActivity extends AppCompatActivity {
         temp = payBase[SOCIALBASETT].getText().toString();
         if (temp.isEmpty() != true) {
             socialBase = Float.valueOf(temp);
-            if (socialBase > salary)
-                socialBase =salary;
+            if (socialDown > salary)
+                temp2 = socialDown;
+            else if (socialBase > salary)
+                temp2 = socialBase;
+            else {
+                temp2 = salary;
+            }
+        }
+        else {
+            temp2 = 0;
         }
 
         temp = payBase[HOUSEBASETT].getText().toString();
         if (temp.isEmpty() != true) {
-            houseBase = Float.valueOf(temp);
-            if (houseBase > salary)
-                houseBase = salary;
+            temp3 = Float.valueOf(temp);
+            if (houseDown > salary) {
+                temp3 = houseDown;
+            } else if (houseBase > salary) {
+                temp3 = houseBase;
+            }
+            else {
+                temp3 = salary;
+            }
+        }
+        else{
+            temp3 = 0;
         }
 
-        atsSalary = socialBase*socialRatio + houseBase*ratios[HOUSETT];
-        comCost = socialBase*socialcomRatio + houseBase*ratiosCom[HOUSETT];
+        System.out.println("su:"+socialBase+"\nsd:"+socialDown+"\nhu:"+houseBase+"\nhd:"+houseDown);
+
+        atsSalary = temp2*socialRatio + temp3*ratios[HOUSETT];
+        comCost = temp2*socialcomRatio + temp3*ratiosCom[HOUSETT];
 
         comCost += salary;
         atsSalary = salary - atsSalary;
@@ -235,6 +306,7 @@ public class MainActivity extends AppCompatActivity {
         return 0;
     }
 
+    //更新最總顯示結果
     private int updateResult(){
         PitCal pcs = new PitCal();
 
@@ -258,9 +330,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //選擇不同城市、省份，刷新界面顯示
     private void selectItem(int position) {
         leftDlt.setItemChecked(position,true);
         citynameTv.setText(leftPt[position]);
+        writeRatio(position);
         leftDly.closeDrawer(leftDlt);
     }
 
@@ -268,6 +342,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -284,7 +359,7 @@ public class MainActivity extends AppCompatActivity {
         //calcuate value
         locateWidget();
         getRatio(0);
-        writeRatio();
+        writeRatio(BEIJING);
 
         calBtn.setOnClickListener(new View.OnClickListener() {
             @Override

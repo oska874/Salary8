@@ -15,6 +15,7 @@ package com.salary10.ezio.salary8;
 7	超过80,000元的部分	            超过57,505的部分	            45	    13,505
  */
 public class PitCal {
+    
     public float calcPit(float salary){
         float taxbase = salary - 3500;
         if (taxbase <= 0){

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="shSin" >
+
+    <item name="oldR">0.08</item>
+    <item name="healthR">0.02</item>
+    <item name="unempR">0.005</item>
+    <item name="birthR">0</item>
+    <item name="workinjR">0</item>
+    <item name="houseR">0.07</item>
+
+    <item name="oldRC">0.20</item>
+    <item name="healthRC">0.10</item>
+    <item name="unempRC">0.01</item>
+    <item name="birthRC">0.01</item>
+    <item name="workinjRC">0.005</item>
+    <item name="houseRC">0.07</item>
+
+        <item name="socBaseUp">16353</item>
+        <item name="houseBaseUp">15108</item>
+        <item name="socBaseDown">3271</item>
+        <item name="houseBaseDown">1820</item>
+    </string-array>
+
+</resources>

@@ -15,8 +15,9 @@ package com.salary10.ezio.salary8;
 7	超过80,000元的部分	            超过57,505的部分	            45	    13,505
  */
 public class PitCal {
-    
-    public float calcPit(float salary){
+
+    //计算税额
+    public static float calcPit(float salary){
         float taxbase = salary - 3500;
         if (taxbase <= 0){
             return 0;
@@ -41,10 +42,69 @@ public class PitCal {
         else if (taxbase <= 80000){
             taxbase = taxbase*35/100 - 5505;
         }
-        else if (taxbase >80000){
+        else {
             taxbase = taxbase*45/100 - 13505;
         }
         return taxbase;
     }
 
+    //计算社保
+    private float calSin(float salary,float baseUp,float baseDown){
+        float sin=0;
+
+        return sin;
+    }
+
+    //计算公积金
+    private float houseSin(float salary, float baseUp,float baseDown){
+        float house =0;
+
+        return house;
+    }
+
+    private static float calYeb(float yearBounce,float monthBounce){
+        float temp1,res;
+
+        temp1 = yearBounce/12;
+        if (temp1 <=1500){
+            res = yearBounce*3/100;
+        }
+        else if (temp1 <=4500){
+            res = yearBounce*10/100-105;
+        }
+        else if (temp1 <=9000){
+            res = yearBounce*20/100 -555;
+        }
+        else if (temp1 <= 35000){
+            res = yearBounce*25/100-1005;
+        }
+        else if(temp1<=55000){
+            res = yearBounce*30/100-2755;
+        }
+        else if(temp1 <=80000){
+            res =yearBounce*35/100-5505;
+        }
+        else {
+            res = yearBounce*45/100-13505;
+        }
+
+        return res;
+    }
+    /*
+在年终奖金发放的当月，年终奖金与当月工资组合扣税：
+当工资收入减去五险一金后，大于或等于个税起征点时，工资和年终奖是各算各的，之间没有一点联系。
+当工资收入减去五险一金后，比个税起征点小时，年终奖金的应纳税所得额就不是之前的年终奖收入金额了，
+    年终奖应纳税所得额 = 年终奖金 - （个税起征点 - (工资收入 - 五险一金))。
+ */
+    public static float calYear(float yearBounce,float monthBounce,float sin){
+        float tax=0;
+
+        if ((monthBounce - sin) >= 3500){
+            tax = calYeb(yearBounce,monthBounce);
+        }
+        else{
+            tax = calYeb(yearBounce-(3500 - (monthBounce - sin)),monthBounce);
+        }
+        return tax;
+    }
 }

@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Salary8-beta</string>
     <string name="action_settings">Settings</string>
+    <string name="yearCalcuate">年终奖</string>
+    <string name="monthCalcuate">月收入</string>
     <string-array name="city_array">
         <item>北京</item>
         <item>上海</item>

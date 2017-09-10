@@ -10,10 +10,10 @@
     <item name="houseR">0.11</item>
 
     <item name="oldRC">0.20</item>
-    <item name="healthRC">0.09</item>
+    <item name="healthRC">0.10</item>
     <item name="unempRC">0.02</item>
-    <item name="birthRC">0.007</item>
-    <item name="workinjRC">0.008</item>
+    <item name="birthRC">0.008</item>
+    <item name="workinjRC">0.005</item>
     <item name="houseRC">0.11</item>
 
         <item name="socBaseUp">14068</item>

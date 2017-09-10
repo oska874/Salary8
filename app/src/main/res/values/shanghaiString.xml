@@ -9,11 +9,11 @@
     <item name="workinjR">0</item>
     <item name="houseR">0.07</item>
 
-    <item name="oldRC">0.20</item>
-    <item name="healthRC">0.10</item>
-    <item name="unempRC">0.01</item>
+    <item name="oldRC">0.21</item>
+    <item name="healthRC">0.11</item>
+    <item name="unempRC">0.015</item>
     <item name="birthRC">0.01</item>
-    <item name="workinjRC">0.005</item>
+    <item name="workinjRC">0.0005</item>
     <item name="houseRC">0.07</item>
 
         <item name="socBaseUp">16353</item>

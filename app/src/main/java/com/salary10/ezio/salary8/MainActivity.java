@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.AdapterView;
@@ -49,6 +50,9 @@ public class MainActivity extends AppCompatActivity {
     public static final int SHANNXI=4;
     public static final int TIANJIN=5;
 
+    public static final int MONTH_SALAY =0;
+    public static final int YEAR_SALARY = 1;
+
 
     // Used to load the 'native-lib' library on application startup.
     static {
@@ -68,6 +72,9 @@ public class MainActivity extends AppCompatActivity {
     private ListView leftDlt;
     private String[] leftPt;
     private TextView citynameTv;
+    private EditText yearBounceEd,monthBounceEd;
+    private Button yearCalcBtn;
+    private TextView yearResTv;
 
 
     private Integer dataok = 1;
@@ -79,9 +86,17 @@ public class MainActivity extends AppCompatActivity {
     private float socialBase,houseBase,socialDown,houseDown;
     private float socialRatio = 0;
     private float socialcomRatio = 0;
+    private float yearBounceVal,monthBounceVal;
+    private float yearEndBounceVal;
 
     //找出要用的控件變量
     private void locateWidget(){
+
+        yearBounceEd = (EditText)findViewById(R.id.ybVal);
+        monthBounceEd = (EditText)findViewById(R.id.mbVal);
+        yearCalcBtn = (Button)findViewById(R.id.yearBounceButton);
+        yearResTv = (TextView)findViewById(R.id.bbVal);
+
         calBtn = (Button)findViewById(R.id.calRun);
         atsTv = (TextView)findViewById(R.id.caledsalaryVal);
         taxedTv = (TextView)findViewById(R.id.taxedsalaryVal);
@@ -181,21 +196,192 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    /*
-    //計算要上稅的工資
-    private float getAts(){
-        float temp=0;
-        for(int i=0;i<6;i++){
-            temp += ratios[i];
+    private int getYearData(){
+        int res=-1;
+        String temp;
+
+        float[] sins = getSins();
+        if(sins == null){
+            System.out.println("getsins null");
+            return res;
         }
-        if (temp >=1 )
-            return 0;
+        System.out.println("sins.len:"+sins.length);
 
-        temp = salary*(1-temp);
+        temp = yearBounceEd.getText().toString();
+        if (temp.isEmpty() !=true){
+            yearBounceVal = Float.valueOf(temp);
+        }
+        temp = monthBounceEd.getText().toString();
+        if(temp.isEmpty() != true){
+            monthBounceVal=Float.valueOf(temp);
+        }
+        System.out.println("Y:"+yearBounceVal+"m:"+monthBounceVal);
 
-        return temp;
+        float temp1,temp2;
+
+        //实际上社保/公积金的基数
+        if (sins[2] > monthBounceVal){
+            temp1 = sins[2];
+        }
+        else if (sins[3] > monthBounceVal){
+            temp1 = monthBounceVal;
+        }
+        else {
+            temp1 = sins[3];
+        }
+
+        if (sins[4] > monthBounceVal){
+            temp2 = sins[2];
+        }
+        else if (sins[5] > monthBounceVal){
+            temp2 = monthBounceVal;
+        }
+        else {
+            temp2 = sins[5];
+        }
+        res =0;
+
+        yearEndBounceVal = yearBounceVal - PitCal.calYear(yearBounceVal,monthBounceVal,(temp1*sins[0] + temp2*sins[1]));
+
+        return res;
     }
-    */
+
+    //获取五险一金比例，和基数上下限，返回数组：[sinR][houseR][sin down][sin up][house down][house up]
+    private float[] getSins(){
+
+        float[] sins=new float[6];
+        String temp;
+        float temp2,temp3;
+        dataok = 1;
+
+        socialRatio=0;
+        socialcomRatio=0;
+        //get ratio from editbox
+        for(int i=0;i<6;i++){
+            if(ck6CK[i].isChecked() == true){
+
+                temp = ed6Ed[i].getText().toString();
+                if (temp.isEmpty() != true) {
+                    ratios[i] = Float.valueOf(temp);
+                }
+                else {
+                    dataok = 0;
+                    break;
+                }
+
+                temp = edcom6Ed[i].getText().toString();
+                if (temp.isEmpty() != true) {
+                    ratiosCom[i] = Float.valueOf(temp);
+                }
+                else {
+                    dataok = 0;
+                    break;
+                }
+            }
+            else{
+                ratios[i]=0;
+                ratiosCom[i]=0;
+            }
+
+            socialRatio += ratios[i];
+            socialcomRatio += ratiosCom[i];
+        }
+        socialRatio -= ratios[HOUSETT];
+        socialcomRatio -= ratiosCom[HOUSETT];
+
+        sins[0] = socialRatio;
+        sins[1] = socialcomRatio;
+
+        if (dataok == 0){
+            AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
+
+            dlgAlert.setMessage("输入错误");
+            dlgAlert.setTitle("Salary8");
+            dlgAlert.setPositiveButton("OK", null);
+            dlgAlert.setCancelable(true);
+            dlgAlert.create().show();
+
+            dlgAlert.setPositiveButton("Ok",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            //dismiss the dialog
+                        }
+                    });
+
+            ((LinearLayout)findViewById(R.id.resLo)).setVisibility(View.INVISIBLE);
+
+            System.out.print("out3333:"+sins[0]+"\n");
+            return null;
+        }
+
+        temp = payBase[SOCIALBASETT].getText().toString();
+        if (temp.isEmpty() != true) {
+            socialBase = Float.valueOf(temp);
+        }
+        else {
+            dataok = 0;
+        }
+
+        if (dataok == 0){
+            AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
+
+            dlgAlert.setMessage("输入错误2");
+            dlgAlert.setTitle("Salary8");
+            dlgAlert.setPositiveButton("OK", null);
+            dlgAlert.setCancelable(true);
+            dlgAlert.create().show();
+
+            dlgAlert.setPositiveButton("Ok",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            //dismiss the dialog
+                        }
+                    });
+
+            ((LinearLayout)findViewById(R.id.resLo)).setVisibility(View.INVISIBLE);
+
+            System.out.print("out2222:"+sins[0]+"\n");
+            return null;
+        }
+
+        temp = payBase[HOUSEBASETT].getText().toString();
+        if (temp.isEmpty() != true) {
+            houseBase = Float.valueOf(temp);
+        }
+        else{
+            dataok = 0;
+        }
+
+        if (dataok == 0){
+            AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
+
+            dlgAlert.setMessage("输入错误3");
+            dlgAlert.setTitle("Salary8");
+            dlgAlert.setPositiveButton("OK", null);
+            dlgAlert.setCancelable(true);
+            dlgAlert.create().show();
+
+            dlgAlert.setPositiveButton("Ok",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            //dismiss the dialog
+                        }
+                    });
+
+            ((LinearLayout)findViewById(R.id.resLo)).setVisibility(View.INVISIBLE);
+
+            System.out.print("out111:"+sins[0]+"\n");
+            return null;
+        }
+
+        sins[2] = socialDown;
+        sins[3] = socialBase;
+        sins[4] = houseDown;
+        sins[5] = houseBase;
+
+        System.out.print("out:"+sins[0]+"\n");
+        return sins;
+    }
 
     //從空間讀取五險一金比例，并計算出單位成本和上稅工資金額
     private int getData(){
@@ -218,19 +404,22 @@ public class MainActivity extends AppCompatActivity {
             if(ck6CK[i].isChecked() == true){
 
                 temp = ed6Ed[i].getText().toString();
-
                 if (temp.isEmpty() != true) {
                     ratios[i] = Float.valueOf(temp);
                 }
+                else {
+                    dataok = 0;
+                    break;
+                }
 
                 temp = edcom6Ed[i].getText().toString();
-
                 if (temp.isEmpty() != true) {
                     ratiosCom[i] = Float.valueOf(temp);
                 }
-
-                else
+                else {
                     dataok = 0;
+                    break;
+                }
             }
             else{
                 ratios[i]=0;
@@ -270,9 +459,9 @@ public class MainActivity extends AppCompatActivity {
             if (socialDown > salary)
                 temp2 = socialDown;
             else if (socialBase > salary)
-                temp2 = socialBase;
-            else {
                 temp2 = salary;
+            else {
+                temp2 = socialBase;
             }
         }
         else {
@@ -281,21 +470,19 @@ public class MainActivity extends AppCompatActivity {
 
         temp = payBase[HOUSEBASETT].getText().toString();
         if (temp.isEmpty() != true) {
-            temp3 = Float.valueOf(temp);
+            houseBase = Float.valueOf(temp);
             if (houseDown > salary) {
                 temp3 = houseDown;
             } else if (houseBase > salary) {
-                temp3 = houseBase;
+                temp3 = salary;
             }
             else {
-                temp3 = salary;
+                temp3 = houseBase;
             }
         }
         else{
             temp3 = 0;
         }
-
-        System.out.println("su:"+socialBase+"\nsd:"+socialDown+"\nhu:"+houseBase+"\nhd:"+houseDown);
 
         atsSalary = temp2*socialRatio + temp3*ratios[HOUSETT];
         comCost = temp2*socialcomRatio + temp3*ratiosCom[HOUSETT];
@@ -307,18 +494,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //更新最總顯示結果
-    private int updateResult(){
-        PitCal pcs = new PitCal();
+    private int updateResult(int types){
 
-        float temp = atsSalary - pcs.calcPit(atsSalary);
-
-        atsTv.setText(String.valueOf(temp));
-
-        taxedTv.setText((String.valueOf(comCost)));
-
-        System.out.println("cald:"+temp+"pic:"+pcs.calcPit(atsSalary)+comCost);
-
-        ((LinearLayout)findViewById(R.id.resLo)).setVisibility(View.VISIBLE);
+        if (types == MONTH_SALAY) {
+            float temp = atsSalary - PitCal.calcPit(atsSalary);
+            atsTv.setText(String.valueOf(temp));
+            taxedTv.setText((String.valueOf(comCost)));
+            ((LinearLayout) findViewById(R.id.resLo)).setVisibility(View.VISIBLE);
+        }
+        else if (types == YEAR_SALARY){
+            yearResTv.setText(String.valueOf(yearEndBounceVal));
+            System.out.print("yearend:"+yearEndBounceVal+"\n");
+            ((LinearLayout)findViewById(R.id.yearResLy)).setVisibility(View.VISIBLE);
+        }
 
         return 0;
     }
@@ -366,7 +554,17 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (getData() != 0 )
                     return;
-                updateResult();
+                updateResult(MONTH_SALAY);
+            }
+        });
+
+        yearCalcBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                if ( getYearData()!=0)
+                    return;
+
+                updateResult(YEAR_SALARY);
             }
         });
 
@@ -391,6 +589,21 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        }
+        else if (id == R.id.yearBounceMenu){
+
+            ConstraintLayout ybm = (ConstraintLayout) findViewById(R.id.yearLy);
+            ConstraintLayout mbm = (ConstraintLayout) findViewById(R.id.monthLy);
+            mbm.setVisibility(View.INVISIBLE);
+            ybm.setVisibility(View.VISIBLE);
+            return true;
+        }
+        else if (id == R.id.monthBounceMenu){
+            ConstraintLayout ybm = (ConstraintLayout) findViewById(R.id.yearLy);
+            ConstraintLayout mbm = (ConstraintLayout) findViewById(R.id.monthLy);
+            ybm.setVisibility(View.INVISIBLE);
+            mbm.setVisibility(View.VISIBLE);
             return true;
         }
 

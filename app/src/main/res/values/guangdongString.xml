@@ -4,17 +4,17 @@
 
     <item name="oldR">0.08</item>
     <item name="healthR">0.02</item>
-    <item name="unempR">0.002</item>
+    <item name="unempR">0.01</item>
     <item name="birthR">0</item>
     <item name="workinjR">0</item>
-    <item name="houseR">0.10</item>
+    <item name="houseR">0.08</item>
 
-    <item name="oldRC">0.14</item>
+    <item name="oldRC">0.12</item>
     <item name="healthRC">0.08</item>
-    <item name="unempRC">0.0064</item>
-    <item name="birthRC">0.008</item>
-    <item name="workinjRC">0.004</item>
-    <item name="houseRC">0.10</item>
+    <item name="unempRC">0.02</item>
+    <item name="birthRC">0.0085</item>
+    <item name="workinjRC">0.005</item>
+    <item name="houseRC">0.8</item>
 
         <item name="socBaseUp">12303</item>
         <item name="houseBaseUp">26565</item>

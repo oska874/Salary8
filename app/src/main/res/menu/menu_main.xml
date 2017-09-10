@@ -3,6 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.salary10.ezio.salary8.MainActivity">
     <item
+        android:id="@+id/yearBounceMenu"
+        android:orderInCategory="98"
+        android:title="@string/yearCalcuate"
+        android:actionLayout="@layout/year_content"/>
+    <item
+        android:id="@+id/monthBounceMenu"
+        android:orderInCategory="99"
+        android:title="@string/monthCalcuate"
+        android:actionLayout="@layout/content_main"/>
+    <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"

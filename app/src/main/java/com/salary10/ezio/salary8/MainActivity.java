@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
+import android.text.method.KeyListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -122,6 +124,21 @@ public class MainActivity extends AppCompatActivity {
         edcom6Ed[WORKINJTT] = (EditText)findViewById(R.id.workinjurComRatio);
         edcom6Ed[BIRTHTT] = (EditText)findViewById(R.id.birthComRatio);
         edcom6Ed[HOUSETT] = (EditText)findViewById(R.id.houseComRatio);
+
+        ed6Ed[OLDTT].setKeyListener(null);
+        ed6Ed[HEALTHTT].setKeyListener(null);
+        ed6Ed[UNEMPTT].setKeyListener(null);
+        ed6Ed[WORKINJTT].setKeyListener(null);
+        ed6Ed[BIRTHTT].setKeyListener(null);
+        ed6Ed[HOUSETT].setKeyListener(null);
+
+        edcom6Ed[OLDTT].setKeyListener(null);
+        edcom6Ed[HEALTHTT].setKeyListener(null);
+        edcom6Ed[UNEMPTT].setKeyListener(null);
+        edcom6Ed[WORKINJTT].setKeyListener(null);
+        edcom6Ed[BIRTHTT].setKeyListener(null);
+        edcom6Ed[HOUSETT].setKeyListener(null);
+
 
         salaryEt = (EditText)findViewById(R.id.mysalaryVal);
         payBase[SOCIALBASETT] = (EditText)findViewById(R.id.socicalBaseVal);
@@ -487,6 +504,31 @@ public class MainActivity extends AppCompatActivity {
         atsSalary = temp2*socialRatio + temp3*ratios[HOUSETT];
         comCost = temp2*socialcomRatio + temp3*ratiosCom[HOUSETT];
 
+        if(atsSalary > salary){
+            dataok=0;
+        }
+
+        if (dataok == 0){
+            AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
+
+            dlgAlert.setMessage("输入错误555");
+            dlgAlert.setTitle("Salary8");
+            dlgAlert.setPositiveButton("OK", null);
+            dlgAlert.setCancelable(true);
+            dlgAlert.create().show();
+
+            dlgAlert.setPositiveButton("Ok",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            //dismiss the dialog
+                        }
+                    });
+
+            ((LinearLayout)findViewById(R.id.resLo)).setVisibility(View.INVISIBLE);
+
+            return -1;
+        }
+
         comCost += salary;
         atsSalary = salary - atsSalary;
 
@@ -555,6 +597,8 @@ public class MainActivity extends AppCompatActivity {
                 if (getData() != 0 )
                     return;
                 updateResult(MONTH_SALAY);
+                InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
         });
 
@@ -563,8 +607,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view){
                 if ( getYearData()!=0)
                     return;
-
                 updateResult(YEAR_SALARY);
+                InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
         });
 
